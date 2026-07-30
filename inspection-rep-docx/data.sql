@@ -34,7 +34,11 @@ base_table AS (
         dt.t_excess,              -- Максимально допустимое превышение температуры над окр. средой.
         s.measured_current,       -- Измеренный ток
         s.nominal_current,        -- Номинальный ток
-        s.measured_current * 1.0 / s.nominal_current as load_factor, -- Коэффициент нагрузки
+        CASE         	
+        	WHEN s.measured_current <> 0 AND s.nominal_current <> 0
+        	THEN s.measured_current * 1.0 / s.nominal_current 
+        	ELSE NULL
+        END as load_factor, -- Коэффициент нагрузки
         s.t_observed - s.t_environment as t_observed_excess,         -- Повышение температуры над окр. средой
         --
         edv.equipment_type_name,  -- Тип оборудования
