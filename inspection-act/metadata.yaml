@@ -1,0 +1,39 @@
+name: "Технический акт"
+description: "Технический акт по сдаче-приемке услуг"
+version: "1.0"
+format: "xlsx"
+timeout: 120
+
+parameters:
+  - name: plant_name
+    type: string
+    required: true
+    description: "Станция"
+    placeholder: "Выберите объект"
+    enum_query: "plant_list.sql"
+  - name: period_start
+    type: date
+    required: true
+    description: "Начало периода осмотра"
+  - name: period_end
+    type: date
+    required: true
+    description: "Окончание периода осмотра"
+  - name: act_number
+    type: string
+    required: true
+    description: "Номер акта"
+    placeholder: "Введите номер документа"
+  - name: protocol_number
+    type: string
+    required: true
+    description: "Протокол осмотра"
+    placeholder: "Формат ввода: 123 от 26.10.2026"
+  - name: service_type
+    type: string
+    required: true
+    description: "Тип услуги"
+    placeholder: "Выберите тип услуги"
+    enum:
+    - Монтаж
+    - Осмотр
