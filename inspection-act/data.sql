@@ -9,7 +9,8 @@ WITH ie AS (
 		INNER JOIN lesiv.sticker_installation AS sti
 			ON i.equipment_id = sti.control_point_id
     WHERE
-        sti.installed_at BETWEEN :period_start AND cast(:period_end as timestamp) + interval '1 day'
+	    i.is_deleted IS FALSE
+        AND sti.installed_at BETWEEN :period_start AND cast(:period_end as timestamp) + interval '1 day'
 	GROUP BY
 		equipment_id
 )
