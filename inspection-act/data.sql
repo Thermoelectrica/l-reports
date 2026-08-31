@@ -1,7 +1,7 @@
-WITH ie AS (
+WITH rev AS (
     SELECT 
         i.equipment_id AS equipment_id,
-        SUM(CASE WHEN sti.kind = 'INSTALLATION' THEN sti.count ELSE 0 END) AS sticker_count
+        SUM(sti.count) AS sticker_reviewed
     FROM lesiv.inspection AS i
     INNER JOIN lesiv.equipment_control_point AS ecp 
         ON ecp.equipment_id = i.equipment_id
@@ -9,17 +9,36 @@ WITH ie AS (
         ON ecp.id = sti.control_point_id
     WHERE
         i.is_deleted IS FALSE
-		AND ecp.is_deleted IS FALSE
-        AND sti.installed_at BETWEEN :period_start AND cast(:period_end as timestamp) + interval '1 day'
+        AND ecp.is_deleted IS FALSE
+        AND sti.installed_at >= :period_start
+        AND sti.installed_at < :period_end + interval '1 day'
 	GROUP BY
         i.equipment_id
+),
+ins AS (
+    SELECT 
+        ecp.equipment_id AS equipment_id,
+        SUM(CASE WHEN sti.kind = 'INSTALLATION' THEN sti.count ELSE 0 END) AS sticker_installed
+    FROM lesiv.sticker_installation AS sti
+    INNER JOIN lesiv.equipment_control_point AS ecp 
+        ON ecp.id = sti.control_point_id
+    WHERE
+        ecp.is_deleted IS FALSE
+        AND sti.installed_at >= :period_start
+        AND sti.installed_at < :period_end + interval '1 day'
+	GROUP BY
+        ecp.equipment_id
 )
 SELECT 
     edv.plant_name,
     REPLACE(edv.facility_name || ' > ' || edv.equipment_path, ' > ', ' ') AS equipment_path,
-    ie.sticker_count
+    rev.sticker_reviewed,
+    ins.sticker_installed
 FROM lesiv.equipment_detailed_view edv	
-INNER JOIN ie 
-    ON ie.equipment_id = edv.id
+LEFT JOIN rev
+    ON rev.equipment_id = edv.id
+LEFT JOIN ins 
+    ON ins.equipment_id = edv.id
 WHERE 
-    edv.plant_name = :plant_name;
+    edv.plant_name = :plant_name
+    AND (rev.sticker_reviewed IS NOT NULL OR ins.sticker_installed IS NOT NULL);
