@@ -317,5 +317,22 @@
         "full_name": "В. А. Малякин"
       }
     ]
+  },
+  {
+    "plant_name": "Default",
+    "montage": {
+      "montage_name": "Оснащение термоиндикаторами элементов и узлов электрооборудования.",
+      "montage_result": "montage_result"
+    },
+    "inspection": {
+      "inspection_name": "Сервисное обслуживание смонтированных термоиндикаторов и тепловизионная диагностика электрооборудования.",
+      "inspection_result": "inspection_result"
+    },
+    "signatories": [
+      {
+        "position": "",
+        "full_name": "______________________"
+      }
+    ]
   }
 ]
