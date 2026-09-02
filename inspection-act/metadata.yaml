@@ -35,5 +35,6 @@ parameters:
     description: "Тип услуги"
     placeholder: "Выберите тип услуги"
     enum:
+    - Все
     - Монтаж
     - Осмотр

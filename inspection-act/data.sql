@@ -1,7 +1,7 @@
 WITH rev AS (
     SELECT 
         i.equipment_id AS equipment_id,
-        SUM(sti.count) AS sticker_reviewed
+        SUM(sti.count) AS inspection
     FROM lesiv.inspection AS i
     INNER JOIN lesiv.equipment_control_point AS ecp 
         ON ecp.equipment_id = i.equipment_id
@@ -18,7 +18,7 @@ WITH rev AS (
 ins AS (
     SELECT 
         ecp.equipment_id AS equipment_id,
-        SUM(CASE WHEN sti.kind = 'INSTALLATION' THEN sti.count ELSE 0 END) AS sticker_installed
+        SUM(CASE WHEN sti.kind = 'INSTALLATION' THEN sti.count ELSE 0 END) AS montage
     FROM lesiv.sticker_installation AS sti
     INNER JOIN lesiv.equipment_control_point AS ecp 
         ON ecp.id = sti.control_point_id
@@ -32,8 +32,8 @@ ins AS (
 SELECT 
     edv.plant_name,
     REPLACE(edv.facility_name || ' > ' || edv.equipment_path, ' > ', ' ') AS equipment_path,
-    rev.sticker_reviewed,
-    ins.sticker_installed
+    rev.inspection,
+    ins.montage
 FROM lesiv.equipment_detailed_view edv	
 LEFT JOIN rev
     ON rev.equipment_id = edv.id
@@ -41,4 +41,4 @@ LEFT JOIN ins
     ON ins.equipment_id = edv.id
 WHERE 
     edv.plant_name = :plant_name
-    AND (rev.sticker_reviewed IS NOT NULL OR ins.sticker_installed IS NOT NULL);
+    AND (rev.inspection IS NOT NULL OR ins.montage IS NOT NULL);
