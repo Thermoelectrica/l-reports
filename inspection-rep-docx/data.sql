@@ -65,7 +65,7 @@ base_table AS (
     WHERE
         i.started_at BETWEEN :period_start AND cast(:period_end as timestamp) + interval '1 day' 
         AND edv.plant_name = :plant_name
-        AND (edv.facility_name = :facility_name OR :facility_name IS NULL)
+        AND (edv.facility_name = :facility_name OR :facility_name = '-= ВСЕ =-')
 ),
 adjusted_temperatures AS
 (

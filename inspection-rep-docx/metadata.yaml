@@ -15,6 +15,7 @@ parameters:
     required: false
     description: "Энергообъект"
     enum_query: "facility_list.sql"
+    default: "-= ВСЕ =-"
   - name: period_start
     type: date
     required: true
