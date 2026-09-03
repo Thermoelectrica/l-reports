@@ -10,6 +10,11 @@ parameters:
     required: true
     description: "Станция"
     enum_query: "plant_list.sql"
+  - name: facility_name
+    type: string
+    required: false
+    description: "Энергообъект"
+    enum_query: "facility_list.sql"
   - name: period_start
     type: date
     required: true
