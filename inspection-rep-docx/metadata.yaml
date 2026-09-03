@@ -12,9 +12,15 @@ parameters:
     enum_query: "plant_list.sql"
   - name: facility_name
     type: string
-    required: false
+    required: true
     description: "Энергообъект"
     enum_query: "facility_list.sql"
+    default: "-= ВСЕ =-"
+  - name: equipment_path
+    type: string
+    required: true
+    description: "Оборудование"
+    enum_query: "equipment_list.sql"
     default: "-= ВСЕ =-"
   - name: period_start
     type: date
