@@ -5,6 +5,7 @@ from
 		from lesiv.equipment_detailed_view edv
 		where 
 			edv.equipment_depth <= 2
+            and edv.is_container
 			and not(edv.is_deleted)
 			and plant_name = :plant_name
 			and (facility_name = :facility_name)

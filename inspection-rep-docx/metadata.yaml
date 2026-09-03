@@ -19,7 +19,7 @@ parameters:
   - name: equipment_path
     type: string
     required: true
-    description: "Оборудование"
+    description: "Папка"
     enum_query: "equipment_list.sql"
     default: "-= ВСЕ =-"
   - name: period_start
