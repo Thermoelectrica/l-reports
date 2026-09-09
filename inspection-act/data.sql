@@ -1,8 +1,8 @@
 WITH rev AS (
     SELECT 
-        i.equipment_id AS equipment_id,
+        ecp.equipment_id AS equipment_id,
         SUM(sti.count) AS inspection
-    FROM lesiv.inspection AS i
+    FROM lesiv.inspection i
     INNER JOIN lesiv.equipment_control_point AS ecp 
         ON ecp.equipment_id = i.equipment_id
     INNER JOIN lesiv.sticker_installation AS sti
@@ -10,10 +10,10 @@ WITH rev AS (
     WHERE
         i.is_deleted IS FALSE
         AND ecp.is_deleted IS FALSE
-        AND sti.installed_at >= :period_start
-        AND sti.installed_at < :period_end + interval '1 day'
+        AND i.started_at >= :period_start
+        AND i.started_at < :period_end + interval '1 day'
 	GROUP BY
-        i.equipment_id
+        ecp.equipment_id
 ),
 ins AS (
     SELECT 
