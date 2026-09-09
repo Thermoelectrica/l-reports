@@ -67,6 +67,7 @@ base_table AS (
         AND edv.plant_name = :plant_name
         AND (edv.facility_name = :facility_name OR :facility_name = '-= ВСЕ =-')
         AND (edv.equipment_path LIKE :equipment_path || '%' OR :equipment_path = '-= ВСЕ =-')
+        AND d.status = 'DETECTED'
 ),
 adjusted_temperatures AS
 (

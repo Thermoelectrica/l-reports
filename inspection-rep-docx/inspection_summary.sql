@@ -9,7 +9,8 @@ FROM
         ON i.equipment_id = edv.id
 	WHERE
 		edv.is_container = false
-        AND i.started_at BETWEEN :period_start AND :period_end
+		AND i.started_at >= :period_start
+        AND i.started_at < :period_end + interval '1 day'
         AND edv.plant_name = :plant_name
 GROUP BY
 	full_folder_name,
