@@ -1,0 +1,36 @@
+name: "Отчет по дубликатам (DOCX)"
+description: "Отчет по дубликатам дефектов, выявленных при осмотре оборудования"
+version: "1.0"
+format: "docxtpl"
+timeout: 120
+
+parameters:
+  - name: plant_name
+    type: string
+    required: true
+    description: "Станция"
+    enum_query: "plant_list.sql"
+  - name: facility_name
+    type: string
+    required: true
+    description: "Энергообъект"
+    enum_query: "facility_list.sql"
+    default: "-= ВСЕ =-"
+  - name: equipment_path
+    type: string
+    required: true
+    description: "Папка"
+    enum_query: "equipment_list.sql"
+    default: "-= ВСЕ =-"
+  - name: protocol_number
+    type: string
+    required: true
+    description: "Номер отчета"
+  - name: period_start
+    type: date
+    required: true
+    description: "Начало периода осмотра"
+  - name: period_end
+    type: date
+    required: true
+    description: "Окончание периода осмотра"
