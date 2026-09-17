@@ -10,6 +10,28 @@ WITH grouped_images AS (
     WHERE i.original_file_name NOT LIKE '%CCD%'
 	GROUP BY il.inspection_step_id, i."image_type"
 ),
+insp_history AS (
+    SELECT 
+        ed.equipment_id,
+        ARRAY_AGG(ed.unit_name ORDER BY s.started_at DESC) AS unit_names,
+        ARRAY_AGG(dt.t_excess ORDER BY s.started_at DESC) AS t_excess,
+        ARRAY_AGG(s.started_at ORDER BY s.started_at DESC) AS unit_detected_at,
+        ARRAY_AGG(s.t_sticker ORDER BY s.started_at DESC) AS t_stickers,
+        ARRAY_AGG(s.t_observed ORDER BY s.started_at DESC) AS t_observed,
+        ARRAY_AGG(s.t_environment ORDER BY s.started_at DESC) AS t_environments
+    FROM lesiv.equipment_defect ed
+        INNER JOIN lesiv.inspection_step AS s
+            ON s.defect_id = ed.id
+        INNER JOIN lesiv.defect_type AS dt	
+            ON s.defect_type_id = dt.id
+        INNER JOIN lesiv.equipment e ON ed.equipment_id = e.id
+        INNER JOIN lesiv.facility f ON e.facility_id = f.id
+        INNER JOIN lesiv.plant p ON p.id = f.plant_id
+    WHERE p.name = :plant_name
+        AND s.started_at >= '2026-01-01'::timestamp
+        AND s.started_at < :period_start
+    GROUP BY ed.equipment_id
+),
 base_table AS (
     SELECT 
         -- Столбец "Диспетчерское наименование электрооборудования; узел"
@@ -38,16 +60,28 @@ base_table AS (
         	WHEN s.measured_current <> 0 AND s.nominal_current <> 0
         	THEN s.measured_current * 1.0 / s.nominal_current 
         	ELSE NULL
-        END as load_factor, -- Коэффициент нагрузки
+        END as load_factor,       -- Коэффициент нагрузки
         s.t_observed - s.t_environment as t_observed_excess,         -- Повышение температуры над окр. средой
         --
-        edv.equipment_type_name,  -- Тип оборудования
+        edv.equipment_type_name,                  -- Тип оборудования
         CASE WHEN edv.equipment_type_name LIKE '%двигатель%' THEN 'MOTOR' ELSE 'PANEL' END AS is_panel,
-        ins.full_name             -- Кто проводил осмотр
+        ins.full_name,                            -- Кто проводил осмотр
+        d.detected_at,                            -- Когда дефект зарегистрирован
+        d.status AS defect_status,                -- Статус дефекта
+        ins.full_name,                            -- Кто проводил осмотр
+        i.started_at,                             -- дата осмотра
+        hist.unit_names AS history_unit_names,    -- История осмотров (названия узлов)
+        hist.unit_detected_at AS history_unit_detected_at,  -- История дат регистрации дефектов
+        hist.t_stickers AS history_t_stickers,    -- История осмотров (стикеры)
+        hist.t_observed AS history_t_observed,    -- История осмотров (тепловизор)
+        hist.t_environments AS history_t_environment,  -- История осмотров (температура окружающей среды)
+        hist.t_excess AS history_t_excess         -- История осмотров (превышение температуры)
     FROM 
         lesiv.inspection AS i
         INNER JOIN lesiv.inspection_step AS s
             ON s.inspection_id = i.id
+        INNER JOIN insp_history AS hist
+            ON i.equipment_id = hist.equipment_id
         INNER JOIN lesiv.equipment_defect AS d
             ON d.id = s.defect_id
         INNER JOIN lesiv.equipment_detailed_view AS edv
@@ -63,11 +97,11 @@ base_table AS (
         LEFT OUTER JOIN lesiv.inspector AS ins
             ON i.inspector_id = ins.id	
     WHERE
-        i.started_at BETWEEN :period_start AND cast(:period_end as timestamp) + interval '1 day' 
+        i.started_at >= :period_start
+        AND i.started_at < :period_end + interval '1 day'
         AND edv.plant_name = :plant_name
         AND (edv.facility_name = :facility_name OR :facility_name = '-= ВСЕ =-')
         AND (edv.equipment_path LIKE :equipment_path || '%' OR :equipment_path = '-= ВСЕ =-')
-        AND d.status = 'DETECTED'
 ),
 adjusted_temperatures AS
 (
