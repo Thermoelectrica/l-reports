@@ -1,19 +1,18 @@
 WITH rev AS (
     SELECT 
-        ecp.equipment_id AS equipment_id,
-        SUM(sti.count) AS inspection
-    FROM lesiv.inspection i
-    INNER JOIN lesiv.equipment_control_point AS ecp 
-        ON ecp.equipment_id = i.equipment_id
-    INNER JOIN lesiv.sticker_installation AS sti
-        ON ecp.id = sti.control_point_id
+        COUNT(ist.id) AS inspection,
+        i.equipment_id
+    FROM lesiv.inspection AS i
+    LEFT JOIN lesiv.inspection_step AS ist
+        ON i.id = ist.inspection_id
+        AND ist.is_deleted IS FALSE
     WHERE
         i.is_deleted IS FALSE
-        AND ecp.is_deleted IS FALSE
         AND i.started_at >= :period_start
         AND i.started_at < :period_end + interval '1 day'
+        AND i.status = 'COMPLETED'
 	GROUP BY
-        ecp.equipment_id
+        i.equipment_id
 ),
 ins AS (
     SELECT 
