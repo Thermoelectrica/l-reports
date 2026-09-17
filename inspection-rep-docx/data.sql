@@ -80,7 +80,7 @@ base_table AS (
         lesiv.inspection AS i
         INNER JOIN lesiv.inspection_step AS s
             ON s.inspection_id = i.id
-        INNER JOIN insp_history AS hist
+        LEFT OUTER JOIN insp_history AS hist
             ON i.equipment_id = hist.equipment_id
         INNER JOIN lesiv.equipment_defect AS d
             ON d.id = s.defect_id
