@@ -32,6 +32,21 @@ insp_history AS (
         AND s.started_at < :period_start
     GROUP BY ed.equipment_id
 ),
+work_log_data AS (
+    SELECT
+        wl.inspector_id,
+        ARRAY_AGG(DISTINCT i2.full_name) AS full_names_minor,
+        -- Столбец position пока отсутствует в таблице inspector 
+        --ARRAY_AGG(DISTINCT i2.position) AS positions_minor,
+        wl.started_at,
+        wl.completed_at
+    FROM lesiv.work_log AS wl
+    LEFT JOIN lesiv.work_log_inspector AS wli
+        ON wli.work_log_id = wl.id
+    LEFT JOIN lesiv.inspector AS i2
+        ON i2.id = wli.inspector_id
+    GROUP BY wl.id
+),
 base_table AS (
     SELECT 
         -- Столбец "Диспетчерское наименование электрооборудования; узел"
@@ -65,10 +80,14 @@ base_table AS (
         --
         edv.equipment_type_name,                  -- Тип оборудования
         CASE WHEN edv.equipment_type_name LIKE '%двигатель%' THEN 'MOTOR' ELSE 'PANEL' END AS is_panel,
-        ins.full_name,                            -- Кто проводил осмотр
         d.detected_at,                            -- Когда дефект зарегистрирован
         d.status AS defect_status,                -- Статус дефекта
-        ins.full_name,                            -- Кто проводил осмотр
+        ins.full_name AS full_name_major,         -- Кто проводил осмотр (старший инспектор)
+        -- Столбец position пока отсутствует в таблице inspector
+        --ins.position AS position_major,         -- Должность старшего инспектора
+        wld.full_names_minor,
+        -- Столбец position пока отсутствует в таблице inspector                     -- Кто проводил осмотр (младшие инспектора)
+        --wld.positions_minor,                    -- Должности младших инспекторов
         i.started_at,                             -- дата осмотра
         hist.unit_names AS history_unit_names,    -- История осмотров (названия узлов)
         hist.unit_detected_at AS history_unit_detected_at,  -- История дат регистрации дефектов
@@ -94,8 +113,12 @@ base_table AS (
             ON s.id = vil.inspection_step_id AND vil.image_type = 'VISUAL'
         LEFT OUTER JOIN grouped_images AS til
             ON s.id = til.inspection_step_id AND til.image_type = 'THERMAL'	
-        LEFT OUTER JOIN lesiv.inspector AS ins
-            ON i.inspector_id = ins.id	
+        INNER JOIN lesiv.inspector AS ins
+            ON i.inspector_id = ins.id
+        LEFT JOIN work_log_data AS wld
+            ON wld.inspector_id = i.inspector_id
+            AND i.started_at >= wld.started_at
+            AND i.started_at < wld.completed_at
     WHERE
         i.started_at >= :period_start
         AND i.started_at < :period_end + interval '1 day'
