@@ -36,8 +36,7 @@ work_log_data AS (
     SELECT
         wl.inspector_id,
         ARRAY_AGG(DISTINCT i2.full_name) AS full_names_minor,
-        -- Столбец position пока отсутствует в таблице inspector 
-        --ARRAY_AGG(DISTINCT i2.position) AS positions_minor,
+        ARRAY_AGG(DISTINCT i2.position) AS positions_minor,
         wl.started_at,
         wl.completed_at
     FROM lesiv.work_log AS wl
@@ -83,11 +82,9 @@ base_table AS (
         d.detected_at,                            -- Когда дефект зарегистрирован
         d.status AS defect_status,                -- Статус дефекта
         ins.full_name AS full_name_major,         -- Кто проводил осмотр (старший инспектор)
-        -- Столбец position пока отсутствует в таблице inspector
-        --ins.position AS position_major,         -- Должность старшего инспектора
-        wld.full_names_minor,
-        -- Столбец position пока отсутствует в таблице inspector                     -- Кто проводил осмотр (младшие инспектора)
-        --wld.positions_minor,                    -- Должности младших инспекторов
+        ins.position AS position_major,           -- Должность старшего инспектора
+        wld.full_names_minor,                     -- Кто проводил осмотр (младшие инспектора)
+        wld.positions_minor,                      -- Должности младших инспекторов
         i.started_at,                             -- дата осмотра
         hist.unit_names AS history_unit_names,    -- История осмотров (названия узлов)
         hist.unit_detected_at AS history_unit_detected_at,  -- История дат регистрации дефектов

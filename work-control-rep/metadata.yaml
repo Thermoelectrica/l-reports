@@ -1,0 +1,20 @@
+name: "Учет работы"
+description: "Отчет о фактическом учете работы на станции"
+version: "1.0"
+format: "xlsx-work"
+timeout: 120
+
+parameters:
+  - name: period_start
+    type: date
+    required: true
+    description: "Начало периода"
+  - name: period_end
+    type: date
+    required: true
+    description: "Окончание периода"
+  - name: act_number
+    type: string
+    required: true
+    description: "Номер отчета"
+    placeholder: "Введите номер документа"
