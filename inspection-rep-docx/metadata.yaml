@@ -39,11 +39,6 @@ parameters:
     required: false
     description: "Включить развивающиеся дефекты в отчет"
     default: false
-  - name: debug
-    type: boolean
-    required: false
-    description: "Показать отладочную информацию"
-    default: false
   - name: thermal_device_type
     type: string
     required: false
