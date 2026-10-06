@@ -26,6 +26,11 @@ parameters:
     type: string
     required: true
     description: "Номер отчета"
+  - name: include_developing
+    type: boolean
+    required: false
+    description: "Включить развивающиеся дефекты в отчет"
+    default: false
   - name: period_start
     type: date
     required: true
