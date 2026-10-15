@@ -62,8 +62,16 @@ base_table AS (
         st.name AS sticker_name,  -- Тип наклейки 
         s.t_sticker,              -- Показания наклейки 
         s.is_test_ready,          -- Контролепригодно или нет
-        s.t_environment,          -- Температура окружающей среды
-        s.t_similar_unit,         -- Температура аналогичного узла
+        CASE 
+            WHEN s.t_environment = 0 
+            THEN 1 
+            ELSE s.t_environment 
+        END as t_environment,     -- Температура окружающей среды
+        CASE 
+            WHEN s.t_similar_unit = 0 
+            THEN 1 
+            ELSE s.t_similar_unit 
+        END as t_similar_unit,    -- Температура аналогичного узла
         s.t_observed,             -- Температура, зарегистрированная тепловизором
         s.is_attention_required,  -- Необходимость внимания
         s.is_resolved,            -- Флаг устранения дефекта
@@ -81,6 +89,7 @@ base_table AS (
         edv.equipment_type_name,                  -- Тип оборудования
         CASE WHEN edv.equipment_type_name LIKE '%двигатель%' THEN 'MOTOR' ELSE 'PANEL' END AS is_panel,
         d.detected_at,                            -- Когда дефект зарегистрирован
+        d.resolved_at,                            -- Когда дефект устранен  -- new
         d.status AS defect_status,                -- Статус дефекта
         ins.full_name AS full_name_major,         -- Кто проводил осмотр (старший инспектор)
         ins.position AS position_major,           -- Должность старшего инспектора
@@ -103,7 +112,7 @@ base_table AS (
             ON d.id = s.defect_id
         INNER JOIN lesiv.equipment_detailed_view AS edv
             ON i.equipment_id = edv.id
-        INNER JOIN lesiv.defect_type AS dt	
+        INNER JOIN lesiv.defect_type AS dt
             ON s.defect_type_id = dt.id
         LEFT OUTER JOIN lesiv.sticker_type AS st
             ON s.sticker_type_id = st.id
