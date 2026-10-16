@@ -96,9 +96,9 @@ base_table AS (
         wld.full_names_minor,                     -- Кто проводил осмотр (младшие инспектора)
         wld.positions_minor,                      -- Должности младших инспекторов
         i.started_at,                             -- дата осмотра
-        hist.unit_names AS history_unit_names,    -- История осмотров (названия узлов)
-        hist.unit_detected_at AS history_unit_detected_at,  -- История дат регистрации дефектов
-        hist.t_stickers AS history_t_stickers,    -- История осмотров (стикеры)
+        hist.unit_names AS history_unit_name,     -- История осмотров (названия узлов)
+        hist.unit_detected_at AS history_detected_at,  -- История дат регистрации дефектов
+        hist.t_stickers AS history_t_sticker,     -- История осмотров (стикеры)
         hist.t_observed AS history_t_observed,    -- История осмотров (тепловизор)
         hist.t_environments AS history_t_environment,  -- История осмотров (температура окружающей среды)
         hist.t_excess AS history_t_excess         -- История осмотров (превышение температуры)
