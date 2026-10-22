@@ -1,7 +1,8 @@
-name: "Учет работы"
+name: "Учет работы (XLSX)"
 description: "Отчет о фактическом учете работы на станции"
 version: "1.0"
 format: "xlsx-work"
+preview: false
 timeout: 120
 
 parameters:

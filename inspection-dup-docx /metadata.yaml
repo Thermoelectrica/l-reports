@@ -2,6 +2,7 @@ name: "Отчет по дубликатам (DOCX)"
 description: "Отчет по дубликатам дефектов, выявленных при осмотре оборудования"
 version: "1.0"
 format: "docxtpl"
+preview: false
 timeout: 120
 
 parameters:

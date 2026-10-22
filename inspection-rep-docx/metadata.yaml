@@ -2,6 +2,7 @@ name: "Протокол теплового контроля (DOCX)"
 description: "Протокол теплового контроля контактов и контактных соединений с применением термоиндикаторов"
 version: "1.0"
 format: "docxtpl"
+preview: false
 timeout: 120
 
 parameters:
