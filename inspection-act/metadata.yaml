@@ -1,7 +1,8 @@
-name: "Технический акт"
+name: "Технический акт (XLSX)"
 description: "Технический акт по сдаче-приемке услуг"
 version: "1.0"
 format: "xlsx"
+preview: false
 timeout: 120
 
 parameters:

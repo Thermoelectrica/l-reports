@@ -1,0 +1,70 @@
+name: "Протокол теплового контроля ежедневный (PDF)"
+description: "Протокол теплового контроля ежедневного осморта контактов и контактных соединений с применением термоиндикаторов"
+version: "1.0"
+format: "pdf-protocol"
+preview: false
+timeout: 120
+
+parameters:
+  - name: plant_name
+    type: string
+    required: true
+    description: "Станция"
+    enum_query: "plant_list.sql"
+  - name: facility_name
+    type: string
+    required: true
+    description: "Энергообъект"
+    enum_query: "facility_list.sql"
+    default: "-= ВСЕ =-"
+  - name: equipment_path
+    type: string
+    required: true
+    description: "Папка"
+    enum_query: "equipment_list.sql"
+    default: "-= ВСЕ =-"
+  - name: period_start
+    type: date
+    required: true
+    description: "Дата осмотра"
+  - name: period_end
+    type: date
+    required: true
+    description: "Окончание периода осмотра"
+    default: "2026-10-10"
+    visibility: false
+  - name: protocol_number
+    type: string
+    required: true
+    description: "Номер протокола"
+  - name: include_developing
+    type: boolean
+    required: false
+    description: "Включить развивающиеся дефекты в отчет"
+    default: false
+    visibility: false
+  - name: thermal_device_type
+    type: string
+    required: false
+    description: "Тип и регистрационный номер тепловизора"
+    default: "FLIR E6 Рег.№ 79822-20"
+    visibility: false
+  - name: thermal_device_serial
+    type: string
+    required: false
+    description: "Серийный номер тепловизора"
+    default: "639095800"
+    visibility: false
+  - name: thermal_device_certificate
+    type: string
+    required: false
+    description: "Номер свидетельства о поверке"
+    default: "С-АКЗ/04-12-2025/486553148"
+    visibility: false
+  - name: thermal_device_certificate_valid_until
+    type: date
+    required: false
+    description: "Дата окончания действия свидетельства о поверке"
+    default: "2026-12-03"
+    visibility: false
+

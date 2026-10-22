@@ -1,7 +1,8 @@
-name: "Протокол теплового контроля"
+name: "Протокол теплового контроля (HTML, PDF)"
 description: "Протокол теплового контроля контактов и контактных соединений с применением термоиндикаторов"
 version: "1.0"
 format: "weasyprint"
+preview: true
 timeout: 120
 
 parameters:
