@@ -7,6 +7,7 @@ WITH grouped_images AS (
 		lesiv.inspection_image_link AS il
 		INNER JOIN lesiv.image AS i
 	 		ON il.image_id = i.id
+            AND i.is_deleted IS FALSE
     WHERE i.original_file_name NOT LIKE '%CCD%'
 	GROUP BY il.inspection_step_id, i."image_type"
 ),
