@@ -4,7 +4,6 @@ version: "1.0"
 format: "xlsx"
 preview: false
 timeout: 120
-is_internal: true
 
 parameters:
   - name: plant_name
