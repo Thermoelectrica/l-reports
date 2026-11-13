@@ -4,7 +4,6 @@ version: "1.0"
 format: "weasyprint"
 preview: true
 timeout: 120
-is_internal: true
 
 parameters:
   - name: plant_name
