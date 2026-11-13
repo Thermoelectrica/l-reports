@@ -4,6 +4,7 @@ version: "1.0"
 format: "pdf-protocol"
 preview: false
 timeout: 120
+is_internal: false
 
 parameters:
   - name: plant_name

@@ -4,6 +4,7 @@ version: "1.0"
 format: "xlsx-work"
 preview: false
 timeout: 120
+is_internal: true
 
 parameters:
   - name: period_start
