@@ -208,10 +208,10 @@ parameters:
 - Additional files: `album_template_new.docx`, `thermoelectrica_logo.png`
 
 ### inspection-express-pdf
-**Протокол теплового контроля ежедневный (PDF)**
+**Экспресс-отчет теплового контроля (PDF)**
 - Format: `pdf-protocol`
 - Preview: disabled
-- Description: Протокол теплового контроля ежедневного осмотра контактов и контактных соединений с применением термоиндикаторов
+- Description: Экспресс-отчет теплового контроля ежедневного осморта контактов и контактных соединений с применением термоиндикаторов
 - Parameters: `plant_name`, `facility_name`, `equipment_path`, `period_start`, `period_end`, `protocol_number`, `include_developing`, `thermal_device_*`
 - Queries: `data.sql`, `plant_list.sql`, `facility_list.sql`, `equipment_list.sql`, `inspection_dates.sql`, `inspection_summary.sql`
 - Additional files: `album_template_new.docx`, `thermoelectrica_logo.png`
