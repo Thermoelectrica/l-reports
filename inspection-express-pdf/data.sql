@@ -29,6 +29,11 @@ insp_history AS (
         INNER JOIN lesiv.facility f ON e.facility_id = f.id
         INNER JOIN lesiv.plant p ON p.id = f.plant_id
     WHERE p.name = :plant_name
+        AND EXISTS (
+            SELECT 1 FROM lesiv.inspector_plant_access ipa
+            WHERE ipa.plant_id = p.id
+              AND ipa.inspector_id = CAST(:current_inspector_id AS integer)
+        )
         AND s.started_at >= '2026-01-01'::timestamp
         AND s.started_at < :period_start
     GROUP BY ed.equipment_id
@@ -133,6 +138,11 @@ base_table AS (
         i.started_at >= :period_start
         AND i.started_at < :period_start + interval '1 day'
         AND edv.plant_name = :plant_name
+        AND EXISTS (
+            SELECT 1 FROM lesiv.inspector_plant_access ipa
+            WHERE ipa.plant_id = edv.plant_id
+              AND ipa.inspector_id = CAST(:current_inspector_id AS integer)
+        )
         AND (edv.facility_name = :facility_name OR :facility_name = '-= ВСЕ =-')
         AND (edv.equipment_path LIKE :equipment_path || '%' OR :equipment_path = '-= ВСЕ =-')
 ),
