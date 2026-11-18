@@ -39,10 +39,5 @@ LEFT JOIN rev
 LEFT JOIN ins 
     ON ins.equipment_id = edv.id
 WHERE 
-    edv.plant_name = :plant_name
-    AND EXISTS (
-        SELECT 1 FROM lesiv.inspector_plant_access ipa
-        WHERE ipa.plant_id = edv.plant_id
-          AND ipa.inspector_id = CAST(:current_inspector_id AS integer)
-    )
+    edv.plant_id = ANY(:plant_ids)
     AND (rev.inspection IS NOT NULL OR ins.montage IS NOT NULL);

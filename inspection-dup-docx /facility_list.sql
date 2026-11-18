@@ -14,7 +14,7 @@ FROM
         AND EXISTS (
             SELECT 1 FROM lesiv.inspector_plant_access ipa
             WHERE ipa.plant_id = p.id
-              AND ipa.inspector_id = CAST(:current_inspector_id AS integer)
+              AND ipa.inspector_id = :current_inspector_id
         )
     UNION ALL
     SELECT '-= ВСЕ =-'

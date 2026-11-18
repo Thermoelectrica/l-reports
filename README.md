@@ -153,7 +153,7 @@ parameters:
 - `cache_ttl_minutes` — Cache time-to-live in minutes for this specific report (optional)
 - `format` — Output format (optional). Supported: `weasyprint`, `docxtpl`, `pdf-protocol`, `xlsx`, `xlsx-work`
 - `preview` — Enable preview in UI (optional, default: false)
-- `access_query` — SQL file checked before render/preview (optional). Must return one boolean; anything but `TRUE` denies access. Inspection reports use `access_check.sql`: the inspector must have `inspector_plant_access` to every plant with the selected `plant_name`
+- `access_query` — SQL file checked before render/preview (optional). Must return exactly one row whose columns are all `TRUE` / non-empty arrays, otherwise access is denied. Inspection reports use `access_check.sql`: it returns `plant_ids` only if the inspector has `inspector_plant_access` to every plant with the selected `plant_name`; main queries then filter with `plant_id = ANY(:plant_ids)`
 - `parameters` — List of parameter definitions (optional)
 
 #### Parameter Types
@@ -185,7 +185,7 @@ parameters:
 
 4. **Type Casts**: PostgreSQL type casts like `::regclass`, `::integer`, `::text` are properly handled and won't be mistaken for parameters.
 
-5. **Enum Queries**: Use `enum_query` to populate parameter dropdowns from SQL results. The referenced SQL file should return a single column with available values. The reserved parameter `:current_inspector_id` (logged-in inspector, injected by the engine into all report SQL) is available; cast it as `CAST(:current_inspector_id AS integer)`.
+5. **Enum Queries**: Use `enum_query` to populate parameter dropdowns from SQL results. The referenced SQL file should return a single column with available values. Reserved parameters set by the engine: `:current_inspector_id` (integer, logged-in inspector) in all SQL, and `:plant_ids` (uuid[], from `access_query`) in main queries. Do not declare them in `parameters`.
 
 6. **Hidden Parameters**: Use `visibility: false` to hide parameters from the UI while still providing default values (useful for device serial numbers, certificates, etc.).
 
