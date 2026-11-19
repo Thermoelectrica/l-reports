@@ -153,7 +153,7 @@ parameters:
 - `cache_ttl_minutes` — Cache time-to-live in minutes for this specific report (optional)
 - `format` — Output format (optional). Supported: `weasyprint`, `docxtpl`, `pdf-protocol`, `xlsx`, `xlsx-work`
 - `preview` — Enable preview in UI (optional, default: false)
-- `access_query` — SQL file checked before render/preview (optional). Must return exactly one row whose columns are all `TRUE` / non-empty arrays, otherwise access is denied. Inspection reports use `access_check.sql`: it returns `plant_ids` only if the inspector has `inspector_plant_access` to every plant with the selected `plant_name`; main queries then filter with `plant_id = ANY(:plant_ids)`
+- `access_query` — SQL file checked before render/preview (optional). Must return one row with one column: a non-empty array of plant ids; otherwise access is denied. Inspection reports use `access_check.sql`: it returns `plant_ids` only if the inspector has `inspector_plant_access` to every plant with the selected `plant_name`; main queries then filter with `plant_id = ANY(:plant_ids)`
 - `parameters` — List of parameter definitions (optional)
 
 #### Parameter Types
