@@ -18,7 +18,7 @@ FROM
         ON edv.id = fi.equipment_id
 WHERE
     edv.is_container = false
-    AND edv.plant_name = :plant_name
+    AND edv.plant_id = ANY(:plant_ids)
 GROUP BY
     full_folder_name,
     edv.facility_name
