@@ -32,6 +32,31 @@ installation AS (
     GROUP BY
         date_trunc('day', sti.installed_at),
         i3.full_name
+),
+inspection_stats AS (
+    -- Завершенные осмотры и охваченные ими контрольные точки
+    -- за день по инспектору
+    SELECT
+        date_trunc('day', i4.started_at) AS day,
+        i4.inspector_id,
+        COUNT(*) AS completed_inspections,
+        COALESCE(SUM(cp.point_count), 0) AS control_points
+    FROM lesiv.inspection AS i4
+    LEFT JOIN (
+        SELECT
+            ecp2.equipment_id,
+            SUM(ecp2.point_count) AS point_count
+        FROM lesiv.equipment_control_point AS ecp2
+        WHERE ecp2.is_deleted IS FALSE
+        GROUP BY ecp2.equipment_id
+    ) AS cp
+        ON cp.equipment_id = i4.equipment_id
+    WHERE
+        i4.is_deleted IS FALSE
+        AND i4.status = 'COMPLETED'
+    GROUP BY
+        date_trunc('day', i4.started_at),
+        i4.inspector_id
 )
 SELECT 
     gs.day,
@@ -40,7 +65,9 @@ SELECT
     ARRAY_AGG(COALESCE(wld.full_names_minor, ARRAY[]::text[])) AS full_names_minor,
     ARRAY_AGG(inst.montage) AS montage,
     ARRAY_AGG(wld.work_hours) AS work_hours,
-    ARRAY_AGG(wld.work_percentage) AS work_percentage
+    ARRAY_AGG(wld.work_percentage) AS work_percentage,
+    ARRAY_AGG(COALESCE(ist.control_points, 0)) AS control_points,
+    ARRAY_AGG(COALESCE(ist.completed_inspections, 0)) AS completed_inspections
 FROM generate_series(
     :period_start,
     :period_end,
@@ -56,6 +83,9 @@ LEFT JOIN work_log_data AS wld
 LEFT JOIN installation AS inst
     ON gs.day = inst.day
     AND ins.full_name = inst.full_name
+LEFT JOIN inspection_stats AS ist
+    ON gs.day = ist.day
+    AND ins.id = ist.inspector_id
 INNER JOIN lesiv.plant AS pl
     ON wl.plant_id = pl.id
 GROUP BY gs.day

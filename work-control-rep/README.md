@@ -16,7 +16,7 @@
 
 ### Query Logic
 
-The query uses two CTEs and a generate_series to create a complete daily timeline:
+The query uses three CTEs and a generate_series to create a complete daily timeline:
 
 #### `work_log_data` CTE — Work Log Aggregation
 - Aggregates minor inspector names from work log entries
@@ -29,6 +29,11 @@ The query uses two CTEs and a generate_series to create a complete daily timelin
 - Joins `sticker_installation` with `equipment_control_point` and `inspector`
 - Filters by non-deleted control points
 - Groups by day and inspector name
+
+#### `inspection_stats` CTE — Completed Inspections and Control Points
+- Counts completed inspections (`status = 'COMPLETED'`, not deleted) per inspector per day (by `started_at`)
+- Sums `point_count` of non-deleted control points of the inspected equipment (same logic as `total_point_count` in `equipment_detailed_view`)
+- Groups by day and inspector ID
 
 #### Final SELECT
 - Uses `generate_series` to create a row for each day in the period
@@ -49,6 +54,8 @@ The query uses two CTEs and a generate_series to create a complete daily timelin
 | `montage` | bigint[] | Array of installation counts per inspector |
 | `work_hours` | numeric[] | Array of work hours per inspector |
 | `work_percentage` | numeric[] | Array of work completion percentages |
+| `control_points` | bigint[] | Array of control points covered by completed inspections per inspector |
+| `completed_inspections` | bigint[] | Array of completed inspection counts per inspector |
 
 ### Tables Referenced
 
@@ -58,6 +65,7 @@ The query uses two CTEs and a generate_series to create a complete daily timelin
 - `lesiv.sticker_installation` — Sticker installation records
 - `lesiv.equipment_control_point` — Equipment control points
 - `lesiv.plant` — Plant records
+- `lesiv.inspection` — Inspection records
 
 ---
 
