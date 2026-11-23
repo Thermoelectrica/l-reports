@@ -10,7 +10,7 @@ FROM
 	WHERE
 		edv.is_container = false
         AND i.started_at BETWEEN :period_start AND :period_end
-        AND edv.plant_name = :plant_name
+        AND edv.plant_id = ANY(:plant_ids)
 GROUP BY
 	full_folder_name,
 	edv.facility_name

@@ -5,6 +5,8 @@ format: "weasyprint"
 preview: true
 timeout: 120
 
+access_query: "access_check.sql"  # доступ инспектора к выбранной станции
+
 parameters:
   - name: plant_name
     type: string

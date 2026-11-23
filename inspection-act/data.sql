@@ -39,5 +39,5 @@ LEFT JOIN rev
 LEFT JOIN ins 
     ON ins.equipment_id = edv.id
 WHERE 
-    edv.plant_name = :plant_name
+    edv.plant_id = ANY(:plant_ids)
     AND (rev.inspection IS NOT NULL OR ins.montage IS NOT NULL);
