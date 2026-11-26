@@ -23,12 +23,17 @@ insp_history AS (
     FROM lesiv.equipment_defect ed
         INNER JOIN lesiv.inspection_step AS s
             ON s.defect_id = ed.id
+            AND s.is_deleted IS FALSE
+        INNER JOIN lesiv.inspection AS ih
+            ON ih.id = s.inspection_id
+            AND ih.is_deleted IS FALSE
         INNER JOIN lesiv.defect_type AS dt	
             ON s.defect_type_id = dt.id
         INNER JOIN lesiv.equipment e ON ed.equipment_id = e.id
         INNER JOIN lesiv.facility f ON e.facility_id = f.id
         INNER JOIN lesiv.plant p ON p.id = f.plant_id
     WHERE p.id = ANY(:plant_ids)
+        AND ed.is_deleted IS FALSE
         AND s.started_at >= '2026-01-01'::timestamp
         AND s.started_at < :period_start
     GROUP BY ed.equipment_id
@@ -109,10 +114,12 @@ base_table AS (
         lesiv.inspection AS i
         INNER JOIN lesiv.inspection_step AS s
             ON s.inspection_id = i.id
+            AND s.is_deleted IS FALSE
         LEFT OUTER JOIN insp_history AS hist
             ON i.equipment_id = hist.equipment_id
         INNER JOIN lesiv.equipment_defect AS d  -- new was INNER
             ON d.id = s.defect_id
+            AND d.is_deleted IS FALSE
         INNER JOIN lesiv.equipment_detailed_view AS edv
             ON i.equipment_id = edv.id
         INNER JOIN lesiv.defect_type AS dt	-- new was INNER
@@ -130,7 +137,8 @@ base_table AS (
             AND i.started_at >= wld.started_at
             AND i.started_at < wld.completed_at
     WHERE
-        i.started_at >= :period_start
+        i.is_deleted IS FALSE
+        AND i.started_at >= :period_start
         AND i.started_at < :period_start + interval '1 day'
         AND edv.plant_id = ANY(:plant_ids)
         AND (edv.facility_name = :facility_name OR :facility_name = '-= ВСЕ =-')
