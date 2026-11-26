@@ -47,8 +47,10 @@ base_table AS (
         lesiv.inspection AS i
         INNER JOIN lesiv.inspection_step AS s
             ON s.inspection_id = i.id
+            AND s.is_deleted IS FALSE
         INNER JOIN lesiv.equipment_defect AS d
             ON d.id = s.defect_id
+            AND d.is_deleted IS FALSE
         INNER JOIN lesiv.equipment_detailed_view AS edv
             ON i.equipment_id = edv.id
         INNER JOIN lesiv.defect_type AS dt	
@@ -62,7 +64,8 @@ base_table AS (
         LEFT OUTER JOIN lesiv.inspector AS ins
             ON i.inspector_id = ins.id	
     WHERE
-        i.started_at BETWEEN :period_start AND cast(:period_end as timestamp) + interval '1 day'
+        i.is_deleted IS FALSE
+        AND i.started_at BETWEEN :period_start AND cast(:period_end as timestamp) + interval '1 day'
         AND edv.plant_id = ANY(:plant_ids)
 ),
 adjusted_temperatures AS

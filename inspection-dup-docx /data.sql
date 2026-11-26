@@ -23,11 +23,13 @@ defect_duplicate AS (
                 COUNT(*) AS cnt
             FROM lesiv.equipment_defect
             WHERE status = 'DETECTED'
+                AND is_deleted IS FALSE
             GROUP BY equipment_id, unit_name
             HAVING COUNT(*) > 1
         ) dup ON ed.equipment_id = dup.equipment_id 
               AND ed.unit_name = dup.unit_name
     WHERE ed.status = 'DETECTED'
+        AND ed.is_deleted IS FALSE
 ),
 base_table AS (
     SELECT 
@@ -62,8 +64,10 @@ base_table AS (
         lesiv.inspection AS i
         INNER JOIN lesiv.inspection_step AS s
             ON s.inspection_id = i.id
+            AND s.is_deleted IS FALSE
         INNER JOIN lesiv.equipment_defect AS d
             ON d.id = s.defect_id 
+            AND d.is_deleted IS FALSE
             AND d.id IN (SELECT defect_id FROM defect_duplicate)
         INNER JOIN lesiv.equipment_detailed_view AS edv
             ON i.equipment_id = edv.id
@@ -78,7 +82,8 @@ base_table AS (
         LEFT OUTER JOIN lesiv.inspector AS ins
             ON i.inspector_id = ins.id	
     WHERE
-        i.started_at BETWEEN :period_start AND cast(:period_end as timestamp) + interval '1 day' 
+        i.is_deleted IS FALSE
+        AND i.started_at BETWEEN :period_start AND cast(:period_end as timestamp) + interval '1 day' 
         AND edv.plant_id = ANY(:plant_ids)
         AND (edv.facility_name = :facility_name OR :facility_name = '-= ВСЕ =-')
         AND (edv.equipment_path LIKE :equipment_path || '%' OR :equipment_path = '-= ВСЕ =-')
